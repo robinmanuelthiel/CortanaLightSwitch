@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<VoiceCommands xmlns="http://schemas.microsoft.com/voicecommands/1.1">
+  <CommandSet xml:lang="de" Name="CortanaLightSwitch_de">
+    <CommandPrefix>Schalte das Licht</CommandPrefix>
+    <Example>Schalte das Licht in der Küche ein.</Example>
+
+    <Command Name="switchLightOn">
+      <Example>in der Küche ein</Example>
+      <ListenFor>in {pronoun} {room} {status}</ListenFor>
+      <Feedback>Licht in {pronoun} {room} wird {status}geschaltet.</Feedback>
+      <Navigate />
+    </Command>
+
+    <PhraseList Label="pronoun">
+      <Item>der</Item>
+      <Item>dem</Item>
+    </PhraseList>
+    
+    <PhraseList Label="room">
+      <Item>Küche</Item>
+      <Item>Schlafzimmer</Item>
+    </PhraseList>
+
+    <PhraseList Label="status">
+      <Item>ein</Item>
+      <Item>aus</Item>
+    </PhraseList>        
+  </CommandSet>
+</VoiceCommands>
