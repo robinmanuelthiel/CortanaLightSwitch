@@ -1,0 +1,32 @@
+﻿<Page
+    x:Class="CortanaLightSwitch.SettingsPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:CortanaLightSwitch"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <Grid Margin="20">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="0" TextWrapping="Wrap" Text="Settings" VerticalAlignment="Bottom" Style="{StaticResource HeaderTextBlockStyle}"/>
+            <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="0,20,0,0" Grid.Row="1" TextWrapping="Wrap" Text="CCU" VerticalAlignment="Bottom" Style="{StaticResource TitleTextBlockStyle}"/>
+            <TextBox x:Name="textBox" Margin="0" Grid.Row="2" TextWrapping="Wrap" Text="192.168.0.14" VerticalAlignment="Bottom" Header="IP-Address"/>
+            <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="0,20,0,0" Grid.Row="3" TextWrapping="Wrap" Text="Devices" VerticalAlignment="Bottom" Style="{StaticResource TitleTextBlockStyle}"/>
+            <ListView x:Name="listView" Margin="0" Grid.Row="4"/>
+        </Grid>
+    </Grid>
+
+    <Page.BottomAppBar>
+        <AppBar IsOpen="True" IsSticky="True">
+            <AppBarButton x:Name="btnRefresh" Click="BtnRefresh_OnClick" HorizontalAlignment="Left" Icon="Refresh" Label="Refresh" />
+        </AppBar>
+    </Page.BottomAppBar>
+</Page>

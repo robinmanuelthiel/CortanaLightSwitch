@@ -15,6 +15,8 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Thepagedot.Rhome.HomeMatic.Models;
+using Thepagedot.Rhome.HomeMatic.Services;
 
 namespace CortanaLightSwitch
 {
@@ -23,6 +25,9 @@ namespace CortanaLightSwitch
     /// </summary>
     sealed partial class App : Application
     {
+        public static HomeMaticXmlApi HomeMatic;
+        public static Switcher SelectedLight;
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -31,6 +36,10 @@ namespace CortanaLightSwitch
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
+            // Initialize HomeMatic API
+            var ccu = new Ccu("Demo", "192.168.0.14");
+            HomeMatic = new HomeMaticXmlApi(ccu);
         }
 
         /// <summary>
@@ -78,8 +87,8 @@ namespace CortanaLightSwitch
             // Ensure the current window is active
             Window.Current.Activate();
 
-            var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///CortanaLightSwitchCommands_2.xml"));
-            await Windows.ApplicationModel.VoiceCommands.VoiceCommandDefinitionManager.InstallCommandDefinitionsFromStorageFileAsync(file);
+            //var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///CortanaLightSwitchCommands_2.xml"));
+            //await Windows.ApplicationModel.VoiceCommands.VoiceCommandDefinitionManager.InstallCommandDefinitionsFromStorageFileAsync(file);
         }
 
         /// <summary>

@@ -8,6 +8,12 @@
     mc:Ignorable="d">
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <TextBlock x:Name="tbName"  Height="Auto" Width="Auto" Text="Hallo" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Padding="20">
+            <Image x:Name="imgOff" Source="Assets/bulb-off.png" HorizontalAlignment="Center" VerticalAlignment="Top" Height="200" />
+            <Image x:Name="imgOn" Source="Assets/bulb-on.png" HorizontalAlignment="Center" VerticalAlignment="Top" Height="200" Visibility="Collapsed"/>
+            <Button x:Name="btnSwitch" Click="BtnSwitch_OnClick" Height="Auto" Width="Auto" Content="Switch" HorizontalAlignment="Stretch" Margin="0,20,0,0"/>
+            <Button x:Name="btnSettings" Click="BtnSettings_OnClick" Height="Auto" Width="Auto" Content="Settings" HorizontalAlignment="Stretch" Margin="0,20,0,0"/>
+        </StackPanel>
+        
     </Grid>
 </Page>
