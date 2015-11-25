@@ -6,6 +6,7 @@ using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.UI.Core;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -31,29 +32,56 @@ namespace CortanaLightSwitch
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Collapsed;
         }
 
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected override async void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            if (e.Parameter is string && !string.IsNullOrEmpty(((string)e.Parameter)))
+
+            if (!string.IsNullOrEmpty(e.Parameter as string))
             {
-                var args = ((string)e.Parameter).Split('|');                
+                // Check if all paramters for accessing the light are set
+                if (App.HomeMatic != null && App.SelectedLight != null)
+                {
+                    var args = ((string)e.Parameter).Split('|');
+                    if (args[2] == "ein")
+                        await App.SelectedLight.OnAsync(App.HomeMatic);
+                    else
+                        await App.SelectedLight.OffAsync(App.HomeMatic);
+                }                
             }
         }
 
-        private void BtnSwitch_OnClick(object sender, RoutedEventArgs e)
+        private async void BtnSwitch_OnClick(object sender, RoutedEventArgs e)
         {
+            // Check if a light has been selected
+            if (App.SelectedLight == null)
+            {
+                await new MessageDialog("You have not selected a light yet. Head over to settings to select one.", "No light selected").ShowAsync();
+                return;
+            }
+
+            ((Button)sender).IsEnabled = false;
             IsLightOn = !IsLightOn;
 
             if (IsLightOn)
             {
+                // Send command to HomeMatic
+                await App.SelectedLight.OnAsync(App.HomeMatic);
+
+                // Switch images
                 imgOn.Visibility = Visibility.Visible;
                 imgOff.Visibility = Visibility.Collapsed;
             }
             else
             {
+                // Send command to HomeMatic
+                await App.SelectedLight.OffAsync(App.HomeMatic);
+
+                // Switch images
                 imgOn.Visibility = Visibility.Collapsed;
                 imgOff.Visibility = Visibility.Visible;
             }
+
+            ((Button)sender).IsEnabled = false;
         }
 
         private void BtnSettings_OnClick(object sender, RoutedEventArgs e)

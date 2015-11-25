@@ -28,6 +28,8 @@ namespace CortanaLightSwitch
         public static HomeMaticXmlApi HomeMatic;
         public static Switcher SelectedLight;
 
+        private static readonly ApplicationDataContainer Settings = ApplicationData.Current.LocalSettings;
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -71,6 +73,29 @@ namespace CortanaLightSwitch
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     //TODO: Load state from previously suspended application
+                    // Restore IP-Address
+                    var ipAddress = Settings.Values["ipAddress"];
+                    if (ipAddress != null)
+                    {
+                        HomeMatic = new HomeMaticXmlApi(new Ccu("Demo", (string)ipAddress));
+                    }
+
+                    // Restore selected light
+                    var selectedLightId = Settings.Values["selectedLightId"];
+                    if (selectedLightId != null)
+                    {
+                        var isConnectionValid = await HomeMatic.CheckConnectionAsync();
+                        if (isConnectionValid)
+                        {
+                            var devices = await HomeMatic.GetDevicesAsync();
+                            foreach (var device in devices)
+                            {
+                                SelectedLight = (Switcher)((HomeMaticDevice)device).ChannelList.FirstOrDefault(c => c.IseId == (int)selectedLightId);
+                                if (SelectedLight != null)
+                                    break;
+                            }                            
+                        }
+                    }
                 }
 
                 // Place the frame in the current Window
@@ -89,6 +114,8 @@ namespace CortanaLightSwitch
 
             //var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///CortanaLightSwitchCommands_2.xml"));
             //await Windows.ApplicationModel.VoiceCommands.VoiceCommandDefinitionManager.InstallCommandDefinitionsFromStorageFileAsync(file);
+            var commands = Windows.ApplicationModel.VoiceCommands.VoiceCommandDefinitionManager.InstalledCommandDefinitions["de"];
+            
         }
 
         /// <summary>
@@ -111,7 +138,13 @@ namespace CortanaLightSwitch
         private void OnSuspending(object sender, SuspendingEventArgs e)
         {
             var deferral = e.SuspendingOperation.GetDeferral();
+
             //TODO: Save application state and stop any background activity
+            if (HomeMatic != null)
+                Settings.Values["ipAddress"] = HomeMatic.Ccu.Address;
+            if (SelectedLight != null)
+                Settings.Values["selectedLightId"] = SelectedLight.IseId;            
+
             deferral.Complete();
         }
 

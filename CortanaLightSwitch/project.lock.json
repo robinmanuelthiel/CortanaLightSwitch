@@ -1544,7 +1544,7 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Thepagedot.Rhome.HomeMatic/0.0.6-beta": {
+      "Thepagedot.Rhome.HomeMatic/0.0.7-beta": {
         "dependencies": {
           "Newtonsoft.Json": "[7.0.1, )",
           "System.Collections": "[4.0.0, )",
@@ -3200,7 +3200,7 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Thepagedot.Rhome.HomeMatic/0.0.6-beta": {
+      "Thepagedot.Rhome.HomeMatic/0.0.7-beta": {
         "dependencies": {
           "Newtonsoft.Json": "[7.0.1, )",
           "System.Collections": "[4.0.0, )",
@@ -4828,7 +4828,7 @@
           "runtimes/win8-aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Thepagedot.Rhome.HomeMatic/0.0.6-beta": {
+      "Thepagedot.Rhome.HomeMatic/0.0.7-beta": {
         "dependencies": {
           "Newtonsoft.Json": "[7.0.1, )",
           "System.Collections": "[4.0.0, )",
@@ -6489,7 +6489,7 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Thepagedot.Rhome.HomeMatic/0.0.6-beta": {
+      "Thepagedot.Rhome.HomeMatic/0.0.7-beta": {
         "dependencies": {
           "Newtonsoft.Json": "[7.0.1, )",
           "System.Collections": "[4.0.0, )",
@@ -8117,7 +8117,7 @@
           "runtimes/win8-aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Thepagedot.Rhome.HomeMatic/0.0.6-beta": {
+      "Thepagedot.Rhome.HomeMatic/0.0.7-beta": {
         "dependencies": {
           "Newtonsoft.Json": "[7.0.1, )",
           "System.Collections": "[4.0.0, )",
@@ -9778,7 +9778,7 @@
           "lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Thepagedot.Rhome.HomeMatic/0.0.6-beta": {
+      "Thepagedot.Rhome.HomeMatic/0.0.7-beta": {
         "dependencies": {
           "Newtonsoft.Json": "[7.0.1, )",
           "System.Collections": "[4.0.0, )",
@@ -11406,7 +11406,7 @@
           "runtimes/win8-aot/lib/netcore50/System.Xml.XmlSerializer.dll": {}
         }
       },
-      "Thepagedot.Rhome.HomeMatic/0.0.6-beta": {
+      "Thepagedot.Rhome.HomeMatic/0.0.7-beta": {
         "dependencies": {
           "Newtonsoft.Json": "[7.0.1, )",
           "System.Collections": "[4.0.0, )",
@@ -14803,17 +14803,17 @@
         "System.Xml.XmlSerializer.nuspec"
       ]
     },
-    "Thepagedot.Rhome.HomeMatic/0.0.6-beta": {
-      "sha512": "m5TPqm5X3A+3lAe+8n3CX1UZXCn25nc2Z8XCbDrUvz0IU5xHf1iCItw/1nNsdf6SysCDbQWTq/SYsHQ7/pQHmg==",
+    "Thepagedot.Rhome.HomeMatic/0.0.7-beta": {
+      "sha512": "BWg6LKKLZNMaHxcNLGxGkvBVHg9C1ujhyU0ShslpZ/I36U6QM1tuIfoEoXW8Gk3rCuFhQl6ulCGYo0graaNBNQ==",
       "type": "Package",
       "files": [
         "[Content_Types].xml",
         "_rels/.rels",
         "lib/dotnet/Thepagedot.Rhome.Base.dll",
         "lib/dotnet/Thepagedot.Rhome.HomeMatic.dll",
-        "lib/portable-net45+wp8+win8+wpa81/Thepagedot.Rhome.Base.dll",
-        "lib/portable-net45+wp8+win8+wpa81/Thepagedot.Rhome.HomeMatic.dll",
-        "package/services/metadata/core-properties/cd04a2f96b514fd6ab86b25600a4bf6f.psmdcp",
+        "lib/portable-net45+win8+wpa81+wp8/Thepagedot.Rhome.Base.dll",
+        "lib/portable-net45+win8+wpa81+wp8/Thepagedot.Rhome.HomeMatic.dll",
+        "package/services/metadata/core-properties/ce9f67514f304b949ef3596b0afd4b41.psmdcp",
         "Thepagedot.Rhome.HomeMatic.nuspec"
       ]
     }
@@ -14821,7 +14821,7 @@
   "projectFileDependencyGroups": {
     "": [
       "Microsoft.NETCore.UniversalWindowsPlatform >= 5.0.0",
-      "Thepagedot.Rhome.HomeMatic >= 0.0.6-beta"
+      "Thepagedot.Rhome.HomeMatic >= 0.0.7-beta"
     ],
     "UAP,Version=v10.0": []
   }

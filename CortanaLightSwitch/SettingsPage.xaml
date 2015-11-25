@@ -18,9 +18,15 @@
             </Grid.RowDefinitions>
             <TextBlock x:Name="textBlock" HorizontalAlignment="Left" Margin="0" TextWrapping="Wrap" Text="Settings" VerticalAlignment="Bottom" Style="{StaticResource HeaderTextBlockStyle}"/>
             <TextBlock x:Name="textBlock1" HorizontalAlignment="Left" Margin="0,20,0,0" Grid.Row="1" TextWrapping="Wrap" Text="CCU" VerticalAlignment="Bottom" Style="{StaticResource TitleTextBlockStyle}"/>
-            <TextBox x:Name="textBox" Margin="0" Grid.Row="2" TextWrapping="Wrap" Text="192.168.0.14" VerticalAlignment="Bottom" Header="IP-Address"/>
+            <TextBox x:Name="tbxAddress" Margin="0" Grid.Row="2" TextWrapping="Wrap" Text="" VerticalAlignment="Bottom" Header="IP-Address" TextChanged="tbxAddress_TextChanged"/>
             <TextBlock x:Name="textBlock2" HorizontalAlignment="Left" Margin="0,20,0,0" Grid.Row="3" TextWrapping="Wrap" Text="Devices" VerticalAlignment="Bottom" Style="{StaticResource TitleTextBlockStyle}"/>
-            <ListView x:Name="listView" Margin="0" Grid.Row="4"/>
+            <ListView x:Name="lvDevices" Margin="0" Grid.Row="4" SelectionChanged="LvDevices_OnSelectionChanged">
+                <ListView.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding Name}"></TextBlock>
+                    </DataTemplate>
+                </ListView.ItemTemplate>
+            </ListView>
         </Grid>
     </Grid>
 
