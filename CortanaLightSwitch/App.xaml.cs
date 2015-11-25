@@ -17,6 +17,7 @@ using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Thepagedot.Rhome.HomeMatic.Models;
 using Thepagedot.Rhome.HomeMatic.Services;
+using System.Threading.Tasks;
 
 namespace CortanaLightSwitch
 {
@@ -70,32 +71,12 @@ namespace CortanaLightSwitch
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
+                await RestoreSavedSettings();
+
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     //TODO: Load state from previously suspended application
-                    // Restore IP-Address
-                    var ipAddress = Settings.Values["ipAddress"];
-                    if (ipAddress != null)
-                    {
-                        HomeMatic = new HomeMaticXmlApi(new Ccu("Demo", (string)ipAddress));
-                    }
-
-                    // Restore selected light
-                    var selectedLightId = Settings.Values["selectedLightId"];
-                    if (selectedLightId != null)
-                    {
-                        var isConnectionValid = await HomeMatic.CheckConnectionAsync();
-                        if (isConnectionValid)
-                        {
-                            var devices = await HomeMatic.GetDevicesAsync();
-                            foreach (var device in devices)
-                            {
-                                SelectedLight = (Switcher)((HomeMaticDevice)device).ChannelList.FirstOrDefault(c => c.IseId == (int)selectedLightId);
-                                if (SelectedLight != null)
-                                    break;
-                            }                            
-                        }
-                    }
+                    
                 }
 
                 // Place the frame in the current Window
@@ -112,10 +93,30 @@ namespace CortanaLightSwitch
             // Ensure the current window is active
             Window.Current.Activate();
 
-            //var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///CortanaLightSwitchCommands_2.xml"));
-            //await Windows.ApplicationModel.VoiceCommands.VoiceCommandDefinitionManager.InstallCommandDefinitionsFromStorageFileAsync(file);
-            var commands = Windows.ApplicationModel.VoiceCommands.VoiceCommandDefinitionManager.InstalledCommandDefinitions["de"];
-            
+            // Register Cortana voice commands
+            var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///CortanaLightSwitchCommands.xml"));
+            await Windows.ApplicationModel.VoiceCommands.VoiceCommandDefinitionManager.InstallCommandDefinitionsFromStorageFileAsync(file);            
+        }
+
+        private async Task RestoreSavedSettings()
+        {
+            // Restore IP-Address
+            var ipAddress = Settings.Values["ipAddress"];
+            if (ipAddress != null)
+            {
+                HomeMatic = new HomeMaticXmlApi(new Ccu("Demo", (string)ipAddress));
+            }
+
+            // Restore selected light
+            var selectedLightId = Settings.Values["selectedLightId"];
+            if (selectedLightId != null)
+            {
+                if (await HomeMatic.CheckConnectionAsync())
+                {
+                    var switchers = await HomeMaticTools.GetAllSwitchersAsync();
+                    SelectedLight = switchers.FirstOrDefault(s => s.IseId == (int)selectedLightId);
+                }
+            }
         }
 
         /// <summary>
@@ -148,7 +149,7 @@ namespace CortanaLightSwitch
             deferral.Complete();
         }
 
-        protected override void OnActivated(IActivatedEventArgs args)
+        protected override async void OnActivated(IActivatedEventArgs args)
         {
             base.OnActivated(args);
             string infos = string.Empty;
@@ -165,10 +166,9 @@ namespace CortanaLightSwitch
                 switch (commandName)
                 {
                     case "switchLightOn":
-                        var pronoun = speechRecognitionResult.SemanticInterpretation.Properties["pronoun"][0];
                         var room = speechRecognitionResult.SemanticInterpretation.Properties["room"][0];
                         var status = speechRecognitionResult.SemanticInterpretation.Properties["status"][0];
-                        infos =  pronoun + "|" + room + "|" + status;
+                        infos =  room + "|" + status;
                         break;
                 }
             }
@@ -180,6 +180,9 @@ namespace CortanaLightSwitch
                 rootFrame.NavigationFailed += OnNavigationFailed;
                 Window.Current.Content = rootFrame;
             }
+
+            await RestoreSavedSettings();
+
             rootFrame.Navigate(typeof(MainPage), infos);
             Window.Current.Activate();
         }

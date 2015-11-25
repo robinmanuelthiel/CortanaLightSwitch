@@ -1,7 +1,7 @@
 ﻿{
   "dependencies": {
     "Microsoft.NETCore.UniversalWindowsPlatform": "5.0.0",
-    "Thepagedot.Rhome.HomeMatic": "0.0.7-beta"
+    "Thepagedot.Rhome.HomeMatic": "0.0.8-beta"
   },
   "frameworks": {
     "uap10.0": {}

@@ -31,7 +31,7 @@ namespace CortanaLightSwitch
         {
             this.InitializeComponent();
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
-            SystemNavigationManager.GetForCurrentView().BackRequested += (sender, args) => Frame.GoBack();
+            SystemNavigationManager.GetForCurrentView().BackRequested += (sender, args) => { if (Frame.CanGoBack) Frame.GoBack(); };
         }
 
         protected override async void OnNavigatedTo(NavigationEventArgs e)
@@ -41,65 +41,46 @@ namespace CortanaLightSwitch
             // Fill TextBox with IP-Address
             tbxAddress.Text = App.HomeMatic.Ccu.Address;
 
-            // Demo
-            lvDevices.ItemsSource = new List<HomeMaticDevice> { new HomeMaticDevice("Device 1", 0, ""), new HomeMaticDevice("Device 2", 0, "") };
-
             // Connect to HomeMatic and load devices
-            //var isConnectionValid = await App.HomeMatic.CheckConnectionAsync();
-            //if (isConnectionValid)
-            //{
-            //    var devices = await App.HomeMatic.GetDevicesAsync();                
-
-            //    // Only show switchers in devices list
-            //    //var switchers = devices.Where(d => d.)
-
-            //    lvDevices.ItemsSource = devices;
-            //}
+            prgProgress.Visibility = Visibility.Visible;
+            if (await App.HomeMatic.CheckConnectionAsync())
+            {
+                lvDevices.ItemsSource = await HomeMaticTools.GetAllSwitchersAsync();
+            }
+            else
+            {
+                await new MessageDialog("Connection failed.").ShowAsync();
+            }
+            prgProgress.Visibility = Visibility.Collapsed;
         }
 
         private async void BtnRefresh_OnClick(object sender, RoutedEventArgs e)
         {
-            var isConnectionValid = await App.HomeMatic.CheckConnectionAsync();
-            if (isConnectionValid)
+            prgProgress.Visibility = Visibility.Visible;
+            if (await App.HomeMatic.CheckConnectionAsync())
             {
-                // Load devices for selection   
+                // Load devices for selection
+                lvDevices.ItemsSource = await HomeMaticTools.GetAllSwitchersAsync();
             }
             else
             {
-                // Notify user that the connection failed
-                var xml = ToastNotificationManager.GetTemplateContent(ToastTemplateType.ToastText01);
-                var stringElements = xml.GetElementsByTagName("text");
-                stringElements[0].AppendChild(xml.CreateTextNode("Connection failed."));
-                var toast = new ToastNotification(xml);
-                ToastNotificationManager.CreateToastNotifier().Show(toast);
+                await new MessageDialog("Connection failed.").ShowAsync();
             }
+            prgProgress.Visibility = Visibility.Collapsed;
         }
 
-        private async void LvDevices_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+        private void LvDevices_OnSelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (!e.AddedItems.Any()) return;
-
-            var selectedDevice  = (HomeMaticDevice)e.AddedItems.First();
-
-            // Check if selected device contains Switchers
-            var switcher = selectedDevice.ChannelList.FirstOrDefault(c => c is Switcher);
-            if (switcher != null)
+            if (e.AddedItems.Any())
             {
-                // If so, set first switcher as selected light
                 App.SelectedLight = (Switcher)e.AddedItems.First();
-            }
-            else
-            {
-                await new MessageDialog("The selected device is no light switcher. Please select another device.", "Wrong device selected").ShowAsync();
-                (sender as ListView).SelectedIndex = -1;
-            }
+            }            
         }
 
         private void tbxAddress_TextChanged(object sender, TextChangedEventArgs e)
         {
             // TODO: Check if entered text is IP Address
             App.HomeMatic = new HomeMaticXmlApi(new Ccu("Demo", (sender as TextBlock).Text));
-
         }
     }
 }

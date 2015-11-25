@@ -27,6 +27,8 @@
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
+
+            <ProgressRing x:Name="prgProgress" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Row="4" Width="80" Height="80" IsActive="True" Visibility="Collapsed"/>
         </Grid>
     </Grid>
 

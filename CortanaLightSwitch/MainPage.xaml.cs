@@ -42,7 +42,7 @@ namespace CortanaLightSwitch
                 if (App.HomeMatic != null && App.SelectedLight != null)
                 {
                     var args = ((string)e.Parameter).Split('|');
-                    if (args[2] == "ein")
+                    if (args[1] == "ein")
                         await App.SelectedLight.OnAsync(App.HomeMatic);
                     else
                         await App.SelectedLight.OffAsync(App.HomeMatic);
@@ -81,7 +81,7 @@ namespace CortanaLightSwitch
                 imgOff.Visibility = Visibility.Visible;
             }
 
-            ((Button)sender).IsEnabled = false;
+            ((Button)sender).IsEnabled = true;
         }
 
         private void BtnSettings_OnClick(object sender, RoutedEventArgs e)

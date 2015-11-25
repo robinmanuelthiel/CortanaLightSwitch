@@ -6,15 +6,10 @@
 
     <Command Name="switchLightOn">
       <Example>in der Küche ein</Example>
-      <ListenFor>in {pronoun} {room} {status}</ListenFor>
-      <Feedback>Licht in {pronoun} {room} wird {status}geschaltet.</Feedback>
+      <ListenFor>[in][im] [der][dem] {room} {status}</ListenFor>
+      <Feedback>Licht in {room} wird {status}geschaltet.</Feedback>
       <Navigate />
     </Command>
-
-    <PhraseList Label="pronoun">
-      <Item>der</Item>
-      <Item>dem</Item>
-    </PhraseList>
     
     <PhraseList Label="room">
       <Item>Küche</Item>
