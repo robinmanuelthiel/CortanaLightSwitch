@@ -1,21 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Core;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
 namespace CortanaLightSwitch
 {
@@ -39,13 +27,13 @@ namespace CortanaLightSwitch
             if (!string.IsNullOrEmpty(e.Parameter as string))
             {
                 // Check if all paramters for accessing the light are set
-                if (App.HomeMatic != null && App.SelectedLight != null)
+                if (App.HomeMatic != null && App.SelectedLightId != 0)
                 {
                     var args = ((string)e.Parameter).Split('|');
                     if (args[1] == "ein")
-                        await App.SelectedLight.OnAsync(App.HomeMatic);
+                        await App.HomeMatic.SendChannelUpdateAsync(App.SelectedLightId, true);
                     else
-                        await App.SelectedLight.OffAsync(App.HomeMatic);
+                        await App.HomeMatic.SendChannelUpdateAsync(App.SelectedLightId, false);
                 }                
             }
         }
@@ -53,7 +41,7 @@ namespace CortanaLightSwitch
         private async void BtnSwitch_OnClick(object sender, RoutedEventArgs e)
         {
             // Check if a light has been selected
-            if (App.SelectedLight == null)
+            if (App.SelectedLightId == 0)
             {
                 await new MessageDialog("You have not selected a light yet. Head over to settings to select one.", "No light selected").ShowAsync();
                 return;
@@ -65,7 +53,7 @@ namespace CortanaLightSwitch
             if (IsLightOn)
             {
                 // Send command to HomeMatic
-                await App.SelectedLight.OnAsync(App.HomeMatic);
+                await App.HomeMatic.SendChannelUpdateAsync(App.SelectedLightId, true);
 
                 // Switch images
                 imgOn.Visibility = Visibility.Visible;
@@ -74,7 +62,7 @@ namespace CortanaLightSwitch
             else
             {
                 // Send command to HomeMatic
-                await App.SelectedLight.OffAsync(App.HomeMatic);
+                await App.HomeMatic.SendChannelUpdateAsync(App.SelectedLightId, false);
 
                 // Switch images
                 imgOn.Visibility = Visibility.Collapsed;

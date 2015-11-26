@@ -1,24 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.UI.Core;
-using Windows.UI.Notifications;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Thepagedot.Rhome.HomeMatic.Models;
 using Thepagedot.Rhome.HomeMatic.Services;
-
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace CortanaLightSwitch
 {
@@ -30,6 +18,8 @@ namespace CortanaLightSwitch
         public SettingsPage()
         {
             this.InitializeComponent();
+
+            // Enable back navigation
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = AppViewBackButtonVisibility.Visible;
             SystemNavigationManager.GetForCurrentView().BackRequested += (sender, args) => { if (Frame.CanGoBack) Frame.GoBack(); };
         }
@@ -45,7 +35,9 @@ namespace CortanaLightSwitch
             prgProgress.Visibility = Visibility.Visible;
             if (await App.HomeMatic.CheckConnectionAsync())
             {
-                lvDevices.ItemsSource = await HomeMaticTools.GetAllSwitchersAsync();
+                var switchers = await HomeMaticTools.GetAllSwitchersAsync();
+                lvDevices.ItemsSource = switchers;
+                lvDevices.SelectedItem = switchers.FirstOrDefault(s => s.IseId == App.SelectedLightId);
             }
             else
             {
@@ -73,7 +65,7 @@ namespace CortanaLightSwitch
         {
             if (e.AddedItems.Any())
             {
-                App.SelectedLight = (Switcher)e.AddedItems.First();
+                App.SelectedLightId = ((Switcher)e.AddedItems.First()).IseId;
             }            
         }
 

@@ -1,23 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
-using Windows.Foundation;
-using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Primitives;
-using Windows.UI.Xaml.Data;
-using Windows.UI.Xaml.Input;
-using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using Thepagedot.Rhome.HomeMatic.Models;
 using Thepagedot.Rhome.HomeMatic.Services;
-using System.Threading.Tasks;
 
 namespace CortanaLightSwitch
 {
@@ -27,7 +16,7 @@ namespace CortanaLightSwitch
     sealed partial class App : Application
     {
         public static HomeMaticXmlApi HomeMatic;
-        public static Switcher SelectedLight;
+        public static int SelectedLightId;
 
         private static readonly ApplicationDataContainer Settings = ApplicationData.Current.LocalSettings;
 
@@ -71,7 +60,7 @@ namespace CortanaLightSwitch
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
 
-                await RestoreSavedSettings();
+                RestoreSavedSettings();
 
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
@@ -98,7 +87,7 @@ namespace CortanaLightSwitch
             await Windows.ApplicationModel.VoiceCommands.VoiceCommandDefinitionManager.InstallCommandDefinitionsFromStorageFileAsync(file);            
         }
 
-        private async Task RestoreSavedSettings()
+        private void RestoreSavedSettings()
         {
             // Restore IP-Address
             var ipAddress = Settings.Values["ipAddress"];
@@ -107,15 +96,11 @@ namespace CortanaLightSwitch
                 HomeMatic = new HomeMaticXmlApi(new Ccu("Demo", (string)ipAddress));
             }
 
-            // Restore selected light
+            // Restore selected light id
             var selectedLightId = Settings.Values["selectedLightId"];
             if (selectedLightId != null)
             {
-                if (await HomeMatic.CheckConnectionAsync())
-                {
-                    var switchers = await HomeMaticTools.GetAllSwitchersAsync();
-                    SelectedLight = switchers.FirstOrDefault(s => s.IseId == (int)selectedLightId);
-                }
+                SelectedLightId = (int)selectedLightId;                
             }
         }
 
@@ -140,20 +125,21 @@ namespace CortanaLightSwitch
         {
             var deferral = e.SuspendingOperation.GetDeferral();
 
-            //TODO: Save application state and stop any background activity
+            // Save settings
             if (HomeMatic != null)
                 Settings.Values["ipAddress"] = HomeMatic.Ccu.Address;
-            if (SelectedLight != null)
-                Settings.Values["selectedLightId"] = SelectedLight.IseId;            
+            if (SelectedLightId != 0)
+                Settings.Values["selectedLightId"] = SelectedLightId;            
 
             deferral.Complete();
         }
 
-        protected override async void OnActivated(IActivatedEventArgs args)
+        protected override void OnActivated(IActivatedEventArgs args)
         {
             base.OnActivated(args);
             string infos = string.Empty;
 
+            // Get voice data
             if (args.Kind == ActivationKind.VoiceCommand)
             {                
                 var commandArgs = args as VoiceCommandActivatedEventArgs;
@@ -173,16 +159,17 @@ namespace CortanaLightSwitch
                 }
             }
 
+            // Prepare frame
             Frame rootFrame = Window.Current.Content as Frame;
             if (rootFrame == null)
             {
                 rootFrame = new Frame();
                 rootFrame.NavigationFailed += OnNavigationFailed;
                 Window.Current.Content = rootFrame;
-            }
+                RestoreSavedSettings();
+            }            
 
-            await RestoreSavedSettings();
-
+            // Navigate
             rootFrame.Navigate(typeof(MainPage), infos);
             Window.Current.Activate();
         }
