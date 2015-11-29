@@ -191,15 +191,32 @@ protected override void OnActivated(IActivatedEventArgs args)
     Window.Current.Activate();
 }
 ```
+At last we need to teach our `MainPage` to deal with those navigation arguments and to react on them properly. Inside the `OnNavigatedTo` event handler we can access the navigation arguments and split them into single parts. Now we can procceed them and switch the lamp on or off regarding to the spoken command.
+```c#
+protected override async void OnNavigatedTo(NavigationEventArgs e)
+{
+    base.OnNavigatedTo(e);
+
+    if (!string.IsNullOrEmpty(e.Parameter as string))
+    {
+        // Check if all paramters for accessing the light are set
+        if (App.HomeMatic != null && App.SelectedLightId != 0)
+        {
+            var args = ((string)e.Parameter).Split('|');
+            if (args[1] == "ein")
+                await App.HomeMatic.SendChannelUpdateAsync(App.SelectedLightId, true);
+            else
+                await App.HomeMatic.SendChannelUpdateAsync(App.SelectedLightId, false);
+        }                
+    }
+}
+```
+### 6. Next steps
+Check the full code for a working demo which also includes automatic settings saving, which is mandatory when activating the app via Cortana. When the app starts we do not always want to select the lamp to control. This is why our selection and the cetral unit's IP-Address should be saved. The code also includes an automatic pre-selection of the last selected device in settings and some UI-stuff like loading indicators and a lamp on/off image.
 
 
-
-
-## What is also included
-
-- Saveing settings
-- Automatic pre-selection of the last selected device in settings
-- Loading indicators
+## To-Do:
+- Automatic detection of the lamü's state.
 
 ## Credits
 Light Bulb icons by Till Teenck from the Noun Project
