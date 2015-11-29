@@ -113,14 +113,92 @@ private async void BtnSwitch_OnClick(object sender, RoutedEventArgs e)
     await App.HomeMatic.SendChannelUpdateAsync(App.SelectedLightId, IsLightOn);
 }
 ```
-### 4. Let Cortana do the work
-> Coming soon...
+### 4. Teaching Cortana new commands
+To teach Cortana to work with our app, we need to create a voice commant file, where we define the senteces that Cortana listen to and set in context with our app. For this, the `CortanaLightSwitchCommand.xml`file has been created which defines the command to switch a light on and off. If you need detailled information about the syntax of these commands please head over the [Cortana for Windows developers page](https://dev.windows.com/en-us/cortana).
+```xml
+<VoiceCommands xmlns="http://schemas.microsoft.com/voicecommands/1.1">
+  <CommandSet xml:lang="de" Name="CortanaLightSwitch_de">
+    <CommandPrefix>Schalte das Licht</CommandPrefix>
+    <Example>Schalte das Licht in der Küche ein.</Example>
+
+    <Command Name="switchLightOn">
+      <Example>in der Küche ein</Example>
+      <ListenFor>[in][im] [der][dem] {room} {status}</ListenFor>
+      <Feedback>Licht in {room} wird {status}geschaltet.</Feedback>
+      <Navigate />
+    </Command>
+    
+    <PhraseList Label="room">
+      <Item>Küche</Item>
+      <Item>Schlafzimmer</Item>
+    </PhraseList>
+
+    <PhraseList Label="status">
+      <Item>ein</Item>
+      <Item>aus</Item>
+    </PhraseList>        
+  </CommandSet>
+</VoiceCommands>
+```
+Once we've created such a VCD file, we need to register it at Cortana. We do this everytime our app starts in `OnLaunched` event handler of our central `App` class.
+```c#
+// Register Cortana voice commands
+var file = await StorageFile.GetFileFromApplicationUriAsync(new Uri("ms-appx:///CortanaLightSwitchCommands.xml"));
+await Windows.ApplicationModel.VoiceCommands.VoiceCommandDefinitionManager.InstallCommandDefinitionsFromStorageFileAsync(file);  
+```
+Now we can activate our app using Cortana. In the next step we need to react on these activations and extract the user's spoken infomation and proceed them.
+
+### 5. Reacting on an app activation by Cortana
+Whenever your apps get activated by Cortana she tolds you as a devloper that she did it and passes you some additional information about the activation context and the spoken commands. To access this, we need to override the `OnActivated` event handler inside the `App` class. Here we can differentiate between different `ActivationKind`s. If it is a `VoiceCommand`, we need to react.
+
+We can access the `SemanticInterpretation` of the spoken text to extract the variables like `room` and `status` out of it, that we have defined in the VCD file before. We can wrap these information in a single seperated string and pass them to our MainPage while navigating to it.
+
+```c#
+protected override void OnActivated(IActivatedEventArgs args)
+{
+    base.OnActivated(args);
+    string infos = string.Empty;
+
+    // Get voice data
+    if (args.Kind == ActivationKind.VoiceCommand)
+    {                
+        var commandArgs = args as VoiceCommandActivatedEventArgs;
+        var speechRecognitionResult = commandArgs.Result;
+        var commandName = speechRecognitionResult.RulePath[0];
+
+        switch (commandName)
+        {
+            case "switchLightOn":
+                var room = speechRecognitionResult.SemanticInterpretation.Properties["room"][0];
+                var status = speechRecognitionResult.SemanticInterpretation.Properties["status"][0];
+                infos =  room + "|" + status;
+                break;
+        }
+    }
+
+    // Prepare frame
+    Frame rootFrame = Window.Current.Content as Frame;
+    if (rootFrame == null)
+    {
+        rootFrame = new Frame();
+        rootFrame.NavigationFailed += OnNavigationFailed;
+        Window.Current.Content = rootFrame;
+        RestoreSavedSettings();
+    }            
+
+    // Navigate and pass information
+    rootFrame.Navigate(typeof(MainPage), infos);
+    Window.Current.Activate();
+}
+```
+
+
 
 
 ## What is also included
 
-- Save settings
-- Auto selection of selected device in settings
+- Saveing settings
+- Automatic pre-selection of the last selected device in settings
 - Loading indicators
 
 ## Credits
